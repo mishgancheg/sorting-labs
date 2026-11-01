@@ -10,6 +10,8 @@ name = "sorting-lab"
 version = "0.1.0"
 description = "Фреймворк для исследования современных алгоритмов сортировки (вузовская НИР, группа КМБО-04-23)"
 readme = "README.md"
+# Лицензия MIT — файл LICENSE в корне проекта.
+license = { file = "LICENSE" }
 requires-python = ">=3.12"
 dependencies = [
     # numpy — быстрые массивы и генерация распределений для больших наборов данных
