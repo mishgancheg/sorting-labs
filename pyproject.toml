@@ -1,0 +1,31 @@
+# Конфигурация проекта: метаданные, зависимости и правила сборки.
+# Установка в режиме разработки (пакет доступен для импорта, изменения видны сразу):
+#   .venv/Scripts/python.exe -m pip install -e ".[dev]"
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sorting-lab"
+version = "0.1.0"
+description = "Фреймворк для исследования современных алгоритмов сортировки (вузовская НИР, группа КМБО-04-23)"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    # numpy — быстрые массивы и генерация распределений для больших наборов данных
+    "numpy>=1.26",
+    # matplotlib — построение графиков по результатам измерений
+    "matplotlib>=3.8",
+]
+
+[project.optional-dependencies]
+dev = [
+    # pytest — запуск тестов: .venv/Scripts/python.exe -m pytest
+    "pytest>=8.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

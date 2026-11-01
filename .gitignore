@@ -1,0 +1,24 @@
+# Виртуальное окружение Python — у каждого участника своё
+.venv/
+
+# Кэши и артефакты сборки Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+
+# Кэши инструментов
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Локальные настройки IDE и агента (индивидуальные, не для общего репозитория)
+.idea/
+.claude/settings.local.json
+
+# Исходный архив статей: его содержимое уже распаковано в papers/
+sort_except_merge_sort.7z
+
+# Графические бэкенды matplotlib
+matplotlibrc
