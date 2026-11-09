@@ -57,3 +57,64 @@ def test_custom_comparator_is_used(algorithm) -> None:
     descending_compare = lambda a, b: -default_compare(a, b)  # noqa: E731
     algorithm.sort(data, descending_compare)
     assert data == sorted(data, reverse=True)
+
+
+@pytest.mark.parametrize("algorithm", IMPLEMENTED, ids=[a.info.name for a in IMPLEMENTED])
+def test_sorts_random_inputs_of_many_sizes(algorithm) -> None:
+    """Алгоритм сортирует случайные массивы всех размеров от 0 до 120.
+
+    Перебор размеров ловит ошибки на границах: порог переключения на
+    сортировку вставками в Introsort, минимальная длина run'а в Powersort,
+    нечётные длины в рекурсии Splitsort и тому подобное.
+    """
+    import random
+
+    rng = random.Random(2026)
+    for size in range(121):
+        for value_range in (3, 1000):
+            data = [rng.randrange(value_range) for _ in range(size)]
+            expected = sorted(data)
+            algorithm.sort(data)
+            assert data == expected, f"размер {size}, диапазон значений {value_range}"
+
+
+STABLE = [a for a in IMPLEMENTED if a.info.stable]
+
+
+@pytest.mark.parametrize("algorithm", STABLE, ids=[a.info.name for a in STABLE])
+def test_stable_algorithms_keep_order_of_equal_keys(algorithm) -> None:
+    """Устойчивый алгоритм (stable=True в паспорте) не переставляет равные элементы.
+
+    Элементы — пары (ключ, исходная позиция), а компаратор смотрит только
+    на ключ. Если алгоритм устойчив, при равных ключах позиции остаются
+    в возрастающем порядке, то есть результат совпадает с sorted() по парам.
+    """
+    import random
+
+    rng = random.Random(7)
+    keys = [rng.randrange(10) for _ in range(500)]
+    data = [(key, position) for position, key in enumerate(keys)]
+    by_key = lambda a, b: default_compare(a[0], b[0])  # noqa: E731
+    algorithm.sort(data, by_key)
+    assert data == sorted(data)
+
+
+ADAPTIVE = [a for a in IMPLEMENTED if a.info.name in {"powersort", "splitsort", "adaptive_heapsort"}]
+
+
+@pytest.mark.parametrize("algorithm", ADAPTIVE, ids=[a.info.name for a in ADAPTIVE])
+def test_adaptive_algorithms_are_linear_on_sorted_input(algorithm) -> None:
+    """Адаптивный алгоритм на уже отсортированном входе делает O(n) сравнений.
+
+    Статьи-источники обещают линейное число сравнений на отсортированном
+    входе; проверяем с запасом, что их меньше 2n (обычный heapsort
+    на таком входе тратит около 2 n log2 n, то есть в десятки раз больше).
+    """
+    from sorting_lab.bench.metrics import CountingComparator
+
+    n = 2000
+    data = list(range(n))
+    comparator = CountingComparator()
+    algorithm.sort(data, comparator)
+    assert data == list(range(n))
+    assert comparator.comparisons < 2 * n
